@@ -1,0 +1,46 @@
+{
+  "quickList": [
+    {
+      "id": "ql-1773254529440",
+      "text": "Call Timber HP  - Frank Cook",
+      "done": false,
+      "createdAt": "2026-03-11T18:42:09.440Z"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "r1",
+      "title": "Create and Send Invoices to Megan",
+      "timeOfDay": "morning",
+      "date": "2026-03-17",
+      "category": "invoice",
+      "recurring": "weekly",
+      "reminder": true,
+      "createdAt": "2026-03-11"
+    },
+    {
+      "id": "r2",
+      "title": "Send Invoices to Customers",
+      "timeOfDay": "morning",
+      "date": "2026-03-12",
+      "category": "invoice",
+      "recurring": "weekly",
+      "reminder": true,
+      "createdAt": "2026-03-11"
+    },
+    {
+      "id": "r3",
+      "title": "Clean Up Westrock Portal",
+      "timeOfDay": "afternoon",
+      "date": "2026-03-13",
+      "category": "portal",
+      "recurring": "weekly",
+      "reminder": true,
+      "createdAt": "2026-03-11"
+    }
+  ],
+  "completed": [],
+  "settings": {
+    "email": "Mattpatrick11@gmail.com"
+  }
+}
