@@ -1,0 +1,111 @@
+name: Task Reminders
+
+on:
+  schedule:
+    # 8:00 AM Eastern (13:00 UTC) Mon–Fri — Morning reminders
+    - cron: '0 13 * * 1-5'
+    # 1:00 PM Eastern (18:00 UTC) Mon–Fri — Afternoon reminders
+    - cron: '0 18 * * 1-5'
+  workflow_dispatch:
+    inputs:
+      force_slot:
+        description: 'Override time slot (morning or afternoon)'
+        required: false
+        default: ''
+
+jobs:
+  send-reminders:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Send reminder emails
+        env:
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          TO_EMAIL:  ${{ secrets.TO_EMAIL }}
+          FORCE_SLOT: ${{ github.event.inputs.force_slot }}
+        run: |
+          python3 - <<'PYEOF'
+          import json, smtplib, os, sys
+          from email.mime.text import MIMEText
+          from email.mime.multipart import MIMEMultipart
+          from datetime import datetime, timezone, timedelta
+
+          # ── time slot ──────────────────────────────────────────────
+          force = os.environ.get('FORCE_SLOT', '').strip()
+          if force in ('morning', 'afternoon'):
+              slot = force
+          else:
+              # UTC hour: 13 = morning (8am ET), 18 = afternoon (1pm ET)
+              utc_h = datetime.now(timezone.utc).hour
+              slot = 'morning' if utc_h < 16 else 'afternoon'
+
+          # ── date (Eastern) ─────────────────────────────────────────
+          et = timezone(timedelta(hours=-4))   # EDT; adjust to -5 in winter if needed
+          today = datetime.now(et).strftime('%Y-%m-%d')
+          greeting = 'morning' if slot == 'morning' else 'afternoon'
+          slot_emoji = '🌅' if slot == 'morning' else '☀️'
+
+          # ── load tasks ─────────────────────────────────────────────
+          try:
+              with open('tasks.json') as f:
+                  data = json.load(f)
+          except Exception as e:
+              print(f"Could not load tasks.json: {e}")
+              sys.exit(0)
+
+          tasks = [
+              t for t in data.get('tasks', [])
+              if t.get('date') == today
+              and t.get('reminder')
+              and t.get('timeOfDay') == slot
+          ]
+
+          if not tasks:
+              print(f"No {slot} reminders for {today}. All good!")
+              sys.exit(0)
+
+          # ── build email ────────────────────────────────────────────
+          lines = []
+          for t in tasks:
+              cat_labels = {
+                  'follow-up': '📞 Follow-Up', 'invoice': '💰 Invoice',
+                  'portal': '🖥️ Portal', 'internal': '📁 Internal',
+                  'shipment': '📦 Shipment', 'other': '📌 Other',
+              }
+              cat = cat_labels.get(t.get('category','other'), t.get('category',''))
+              rec = f" [🔄 {t['recurring']}]" if t.get('recurring') and t['recurring'] != 'none' else ''
+              lines.append(f"  • {t['title']}  ({cat}){rec}")
+
+          task_list = '\n'.join(lines)
+
+          body = f"""Good {greeting}, Matt! {slot_emoji}
+
+Here are your {slot} tasks for today ({today}):
+
+{task_list}
+
+Open your dashboard → https://{os.environ.get('GH_OWNER','mattpatrick11')}.github.io/sales-dashboard/
+
+Have a great day!
+— Your Dashboard 🌲
+"""
+
+          smtp_user = os.environ['SMTP_USER']
+          smtp_pass = os.environ['SMTP_PASS']
+          to_email  = os.environ['TO_EMAIL']
+
+          msg = MIMEMultipart()
+          msg['Subject'] = f"{slot_emoji} {slot.capitalize()} Tasks — {today} ({len(tasks)} task{'s' if len(tasks)>1 else ''})"
+          msg['From']    = f"Matt's Dashboard <{smtp_user}>"
+          msg['To']      = to_email
+          msg.attach(MIMEText(body, 'plain'))
+
+          with smtplib.SMTP_SSL('smtp.gmail.com', 465) as s:
+              s.login(smtp_user, smtp_pass)
+              s.send_message(msg)
+
+          print(f"✅ Sent {len(tasks)} {slot} reminder(s) to {to_email}")
+          PYEOF
