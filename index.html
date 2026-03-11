@@ -429,14 +429,99 @@
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
+        /* ── QUICK LIST ── */
+        .dashboard-layout {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+        .quick-list-panel {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(180,220,195,0.3);
+            position: sticky;
+            top: 84px;
+            overflow: hidden;
+        }
+        .ql-header {
+            background: var(--green-800);
+            padding: 14px 16px;
+            display: flex; align-items: center; gap: 9px;
+        }
+        .ql-title { font-size: 14px; font-weight: 700; color: var(--cream); flex: 1; }
+        .ql-count {
+            background: var(--green-500); color: white;
+            padding: 1px 7px; border-radius: 20px;
+            font-size: 11px; font-weight: 700;
+        }
+        .ql-add-row {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--green-100);
+            display: flex; align-items: center; gap: 8px;
+        }
+        .ql-add-icon { color: var(--green-500); font-size: 18px; flex-shrink: 0; line-height: 1; }
+        .ql-input {
+            flex: 1; border: none; outline: none;
+            font-size: 13px; font-family: 'Inter', sans-serif;
+            color: var(--text-primary); background: transparent;
+        }
+        .ql-input::placeholder { color: var(--text-muted); }
+        .ql-list { padding: 6px 0; max-height: 520px; overflow-y: auto; }
+        .ql-item {
+            display: flex; align-items: flex-start; gap: 10px;
+            padding: 9px 14px; transition: background 0.15s;
+        }
+        .ql-item:hover { background: var(--cream); }
+        .ql-circle {
+            width: 18px; height: 18px; min-width: 18px;
+            border-radius: 50%; border: 2px solid var(--green-400);
+            background: transparent; cursor: pointer;
+            transition: all 0.18s; margin-top: 1px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .ql-circle:hover { background: var(--green-400); }
+        .ql-circle.done { background: var(--green-500); border-color: var(--green-500); }
+        .ql-circle.done::after { content: '✓'; color: white; font-size: 10px; font-weight: 800; }
+        .ql-text {
+            flex: 1; font-size: 13px; color: var(--text-primary);
+            line-height: 1.45; word-break: break-word;
+        }
+        .ql-text.done { text-decoration: line-through; color: var(--text-muted); }
+        .ql-del {
+            opacity: 0; width: 20px; height: 20px;
+            border: none; background: transparent; cursor: pointer;
+            color: var(--text-muted); font-size: 13px; border-radius: 4px;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.15s; flex-shrink: 0;
+        }
+        .ql-item:hover .ql-del { opacity: 1; }
+        .ql-del:hover { background: #FEE2E2; color: var(--danger); }
+        .ql-empty { padding: 20px 14px; text-align: center; color: var(--text-muted); font-size: 12px; }
+        .ql-clear-btn {
+            display: block; width: calc(100% - 24px); margin: 8px 12px 10px;
+            padding: 7px; border: 1px dashed var(--green-200); border-radius: 7px;
+            background: transparent; color: var(--text-muted); font-size: 12px;
+            font-family: 'Inter', sans-serif; cursor: pointer; transition: all 0.15s;
+        }
+        .ql-clear-btn:hover { background: var(--green-100); color: var(--green-700); border-color: var(--green-400); }
+
         /* ── RESPONSIVE ── */
-        @media (max-width: 900px) {
+        @media (max-width: 1050px) {
+            .dashboard-layout { grid-template-columns: 220px 1fr; }
             .weekly-view { grid-template-columns: repeat(4, 1fr); }
             .stats-bar { grid-template-columns: repeat(2, 1fr); }
         }
+        @media (max-width: 820px) {
+            .dashboard-layout { grid-template-columns: 1fr; }
+            .quick-list-panel { position: static; }
+            .weekly-view { grid-template-columns: repeat(3, 1fr); }
+        }
         @media (max-width: 600px) {
             .daily-view { grid-template-columns: 1fr; }
-            .weekly-view { grid-template-columns: repeat(3, 1fr); }
+            .weekly-view { grid-template-columns: repeat(2, 1fr); }
             .date-display { font-size: 16px; min-width: 0; }
             .header { padding: 0 14px; }
             .main { padding: 16px; }
@@ -500,13 +585,34 @@
         </div>
     </div>
 
-    <!-- VIEW CONTAINER -->
-    <div id="viewContainer">
-        <div class="loading">
-            <div class="spinner"></div>
-            <div>Loading your dashboard…</div>
+    <!-- DASHBOARD LAYOUT: Quick List + Main View -->
+    <div class="dashboard-layout">
+
+        <!-- QUICK LIST SIDEBAR -->
+        <div class="quick-list-panel">
+            <div class="ql-header">
+                <span>📌</span>
+                <span class="ql-title">Quick List</span>
+                <span class="ql-count" id="qlCount">0</span>
+            </div>
+            <div class="ql-add-row">
+                <span class="ql-add-icon">＋</span>
+                <input class="ql-input" id="qlInput" placeholder="Add a note… hit Enter" maxlength="140" />
+            </div>
+            <div class="ql-list" id="qlList"></div>
         </div>
-    </div>
+
+        <!-- MAIN VIEW CONTAINER -->
+        <div>
+            <div id="viewContainer">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <div>Loading your dashboard…</div>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /dashboard-layout -->
 
     <!-- COMPLETED SECTION -->
     <div class="completed-section">
@@ -636,7 +742,7 @@ function setToken(t) { localStorage.setItem('gh_token', t.trim()); }
 // ═══════════════════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════════════════
-let db = { tasks: [], completed: [], settings: { email: 'Mattpatrick11@gmail.com' } };
+let db = { tasks: [], completed: [], quickList: [], settings: { email: 'Mattpatrick11@gmail.com' } };
 let fileSha = null;
 let isSaving = false;
 let currentView = 'daily';
@@ -705,6 +811,7 @@ function saveSetup() {
 // ═══════════════════════════════════════════════════
 function defaultDB() {
     return {
+        quickList: [],
         tasks: [
             { id: 'r1', title: 'Create and Send Invoices to Megan', timeOfDay: 'morning',
               date: nextWeekday(2), category: 'invoice', recurring: 'weekly', reminder: true, createdAt: dateStr(new Date()) },
@@ -762,6 +869,7 @@ function render() {
     updateDateDisplay();
     updateStats();
     renderCompleted();
+    renderQuickList();
     if (currentView === 'daily') renderDaily();
     else if (currentView === 'weekly') renderWeekly();
     else renderMonthly();
@@ -1028,6 +1136,74 @@ function showToast(icon, msg) {
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
 }
+
+// ═══════════════════════════════════════════════════
+// QUICK LIST
+// ═══════════════════════════════════════════════════
+function renderQuickList() {
+    if (!db.quickList) db.quickList = [];
+    const open = db.quickList.filter(i => !i.done);
+    const done  = db.quickList.filter(i => i.done);
+    document.getElementById('qlCount').textContent = open.length;
+
+    const list = document.getElementById('qlList');
+    if (!db.quickList.length) {
+        list.innerHTML = '<div class="ql-empty">Nothing here yet —<br>type above and hit Enter 👆</div>';
+        return;
+    }
+
+    const rows = [...open, ...done].map(item => `
+        <div class="ql-item" id="qli-${item.id}">
+            <button class="ql-circle${item.done ? ' done' : ''}" onclick="qlToggle('${item.id}')"></button>
+            <span class="ql-text${item.done ? ' done' : ''}">${esc(item.text)}</span>
+            <button class="ql-del" onclick="qlDelete('${item.id}')" title="Remove">✕</button>
+        </div>
+    `).join('');
+
+    const clearBtn = done.length
+        ? `<button class="ql-clear-btn" onclick="qlClearDone()">Clear ${done.length} completed</button>`
+        : '';
+
+    list.innerHTML = rows + clearBtn;
+}
+
+function qlAdd() {
+    const input = document.getElementById('qlInput');
+    const text = input.value.trim();
+    if (!text) return;
+    if (!db.quickList) db.quickList = [];
+    db.quickList.unshift({ id: 'ql-' + Date.now(), text, done: false, createdAt: new Date().toISOString() });
+    input.value = '';
+    renderQuickList();
+    ghSave();
+}
+
+function qlToggle(id) {
+    const item = db.quickList.find(i => i.id === id);
+    if (!item) return;
+    item.done = !item.done;
+    if (item.done) item.doneAt = new Date().toISOString();
+    renderQuickList();
+    ghSave();
+}
+
+function qlDelete(id) {
+    db.quickList = db.quickList.filter(i => i.id !== id);
+    renderQuickList();
+    ghSave();
+}
+
+function qlClearDone() {
+    db.quickList = db.quickList.filter(i => !i.done);
+    renderQuickList();
+    ghSave();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('qlInput').addEventListener('keydown', e => {
+        if (e.key === 'Enter') qlAdd();
+    });
+});
 
 // ═══════════════════════════════════════════════════
 // UTILS
