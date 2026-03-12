@@ -37,7 +37,9 @@
       "recurring": "weekly",
       "reminder": true,
       "createdAt": "2026-03-11"
-    },
+    }
+  ],
+  "completed": [
     {
       "id": "task-1773258945403",
       "title": "Reach out to Morcon Tissue on Fuel Surcharge situation and volume",
@@ -46,10 +48,9 @@
       "category": "follow-up",
       "recurring": "none",
       "reminder": true,
-      "createdAt": "2026-03-11"
-    }
-  ],
-  "completed": [
+      "createdAt": "2026-03-11",
+      "completedAt": "2026-03-12T16:42:37.811Z"
+    },
     {
       "id": "r2",
       "title": "Send Invoices to Customers",
