@@ -37,6 +37,16 @@
       "recurring": "weekly",
       "reminder": true,
       "createdAt": "2026-03-11"
+    },
+    {
+      "id": "task-1773409392553",
+      "title": "Work on Telescope Casual Deliveries for Savannah x2",
+      "timeOfDay": "morning",
+      "date": "2026-03-16",
+      "category": "follow-up",
+      "recurring": "none",
+      "reminder": true,
+      "createdAt": "2026-03-13"
     }
   ],
   "completed": [
