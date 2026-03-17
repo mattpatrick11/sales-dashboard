@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Outreach List — Matt's Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    :root {
+      --green-900: #0D2B1E;
+      --green-800: #1B4332;
+      --green-700: #2D6A4F;
+      --green-600: #40916C;
+      --green-500: #52B788;
+      --green-400: #74C69D;
+      --green-300: #95D5B2;
+      --green-200: #B7E4C7;
+      --green-100: #D8F3DC;
+      --cream:       #FEFAE0;
+      --cream-light: #FFFDF7;
+      --cream-dark:  #F0E8C0;
+      --text-primary:   #1B4332;
+      --text-secondary: #40916C;
+      --text-muted:     #74C69D;
+      --amber:      #E9C46A;
+      --amber-dark: #D4A017;
+      --danger:     #C1321F;
+      --shadow-sm: 0 1px 3px rgba(27,67,50,0.08);
+      --shadow-md: 0 4px 12px rgba(27,67,50,0.12);
+      --shadow-lg: 0 8px 32px rgba(27,67,50,0.18);
+      --radius: 14px;
+      --radius-sm: 8px;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--cream);
+      color: var(--text-primary);
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      background: var(--green-800);
+      padding: 0 28px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+      position: sticky;
+      top: 0;
+      z-index: 200;
+    }
+    .header-logo { color: #fff; font-weight: 700; font-size: 1.1rem; display: flex; align-items: center; gap: 10px; }
+    .header-logo span { color: var(--green-300); }
+    .header-nav { display: flex; gap: 8px; }
+    .header-nav a {
+      color: var(--green-300);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      padding: 6px 14px;
+      border-radius: 6px;
+      transition: background 0.2s, color 0.2s;
+    }
+    .header-nav a:hover { background: rgba(255,255,255,0.1); color: #fff; }
+    .header-nav a.active { background: var(--green-600); color: #fff; }
+
+    /* ── PAGE LAYOUT ── */
+    .page-wrapper { max-width: 1400px; margin: 0 auto; padding: 28px 24px; }
+
+    /* ── TOP BAR ── */
+    .page-title { font-size: 1.5rem; font-weight: 700; color: var(--green-900); margin-bottom: 4px; }
+    .page-sub { color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 24px; }
+
+    /* ── STAT CARDS ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .stat-card {
+      background: var(--cream-light);
+      border-radius: var(--radius-sm);
+      padding: 16px 20px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid rgba(27,67,50,0.08);
+    }
+    .stat-card .label { font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+    .stat-card .value { font-size: 1.8rem; font-weight: 700; color: var(--green-800); line-height: 1.2; }
+    .stat-card .sub { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
+
+    /* ── CONTROLS ── */
+    .controls {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .search-box {
+      flex: 1;
+      min-width: 240px;
+      position: relative;
+    }
+    .search-box input {
+      width: 100%;
+      padding: 9px 36px 9px 14px;
+      border: 1.5px solid var(--green-200);
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      font-family: inherit;
+      background: var(--cream-light);
+      color: var(--text-primary);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .search-box input:focus { border-color: var(--green-500); }
+    .search-box .icon { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.9rem; }
+    select.filter {
+      padding: 9px 14px;
+      border: 1.5px solid var(--green-200);
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-family: inherit;
+      background: var(--cream-light);
+      color: var(--text-primary);
+      outline: none;
+      cursor: pointer;
+    }
+    .btn {
+      padding: 9px 18px;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      font-family: inherit;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .btn-primary { background: var(--green-600); color: #fff; }
+    .btn-primary:hover { background: var(--green-700); }
+    .btn-secondary { background: var(--cream-dark); color: var(--text-primary); border: 1.5px solid var(--green-200); }
+    .btn-secondary:hover { background: var(--green-100); }
+    .result-count { font-size: 0.85rem; color: var(--text-secondary); font-weight: 500; white-space: nowrap; }
+
+    /* ── TABLE ── */
+    .table-wrap {
+      background: var(--cream-light);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+      border: 1px solid rgba(27,67,50,0.08);
+    }
+    table { width: 100%; border-collapse: collapse; }
+    thead th {
+      background: var(--green-800);
+      color: var(--green-200);
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 12px 16px;
+      text-align: left;
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+    }
+    thead th:hover { background: var(--green-700); color: #fff; }
+    thead th.sort-asc::after { content: ' ↑'; }
+    thead th.sort-desc::after { content: ' ↓'; }
+    tbody tr { border-bottom: 1px solid rgba(27,67,50,0.06); transition: background 0.15s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: var(--green-100); cursor: pointer; }
+    tbody td { padding: 12px 16px; font-size: 0.875rem; vertical-align: middle; }
+
+    /* ── PRIORITY BADGES ── */
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 100px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .badge-hot { background: #fee2e2; color: #b91c1c; }
+    .badge-warm { background: #fef9c3; color: #854d0e; }
+    .badge-cool { background: var(--green-100); color: var(--green-700); }
+    .badge-cold { background: #f1f5f9; color: #64748b; }
+
+    .company-name { font-weight: 600; color: var(--green-900); }
+    .company-industry { font-size: 0.78rem; color: var(--text-secondary); margin-top: 2px; }
+    .contact-name { font-weight: 500; color: var(--green-800); }
+    .contact-title { font-size: 0.78rem; color: var(--text-muted); margin-top: 1px; }
+    .contact-email { font-size: 0.8rem; color: var(--green-600); }
+
+    .dormant-label { font-size: 0.75rem; font-weight: 600; }
+    .dormant-hot { color: #b91c1c; }
+    .dormant-warm { color: #854d0e; }
+    .dormant-ok { color: var(--text-secondary); }
+
+    .action-btns { display: flex; gap: 6px; flex-wrap: nowrap; }
+    .action-btn {
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      font-family: inherit;
+      white-space: nowrap;
+    }
+    .action-email { background: var(--green-100); color: var(--green-700); }
+    .action-email:hover { background: var(--green-200); }
+    .action-view { background: var(--cream-dark); color: var(--text-primary); border: 1px solid var(--green-200); }
+    .action-view:hover { background: var(--green-100); }
+
+    /* ── PAGINATION ── */
+    .pagination {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      background: var(--cream-dark);
+      border-top: 1px solid rgba(27,67,50,0.1);
+    }
+    .pagination .info { font-size: 0.82rem; color: var(--text-secondary); }
+    .pagination .btns { display: flex; gap: 6px; }
+    .page-btn {
+      width: 32px; height: 32px;
+      border-radius: 6px;
+      border: 1.5px solid var(--green-200);
+      background: var(--cream-light);
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s;
+    }
+    .page-btn:hover { background: var(--green-100); }
+    .page-btn.active { background: var(--green-700); color: #fff; border-color: var(--green-700); }
+    .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* ── DETAIL PANEL (RIGHT SIDEBAR) ── */
+    .detail-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(13,43,30,0.45);
+      z-index: 300;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s;
+    }
+    .detail-overlay.open { opacity: 1; pointer-events: auto; }
+    .detail-panel {
+      position: fixed;
+      top: 0; right: 0; bottom: 0;
+      width: 480px;
+      max-width: 95vw;
+      background: var(--cream-light);
+      box-shadow: -8px 0 40px rgba(0,0,0,0.2);
+      z-index: 310;
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .detail-panel.open { transform: translateX(0); }
+    .detail-header {
+      background: var(--green-800);
+      color: #fff;
+      padding: 20px 24px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .detail-header h2 { font-size: 1.1rem; font-weight: 700; line-height: 1.3; }
+    .detail-header .industry-tag { font-size: 0.75rem; color: var(--green-300); margin-top: 4px; }
+    .close-btn {
+      background: none;
+      border: none;
+      color: var(--green-300);
+      font-size: 1.4rem;
+      cursor: pointer;
+      padding: 2px 6px;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+    .close-btn:hover { color: #fff; background: rgba(255,255,255,0.1); }
+    .detail-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .detail-section h3 {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-secondary);
+      margin-bottom: 10px;
+    }
+    .detail-row { display: flex; gap: 8px; margin-bottom: 8px; align-items: flex-start; }
+    .detail-row .lbl { font-size: 0.8rem; color: var(--text-muted); min-width: 80px; flex-shrink: 0; }
+    .detail-row .val { font-size: 0.875rem; color: var(--text-primary); font-weight: 500; }
+    .detail-row .val a { color: var(--green-600); text-decoration: none; }
+    .detail-row .val a:hover { text-decoration: underline; }
+
+    .contact-card {
+      background: var(--cream);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      border: 1px solid rgba(27,67,50,0.1);
+      margin-bottom: 10px;
+    }
+    .contact-card .cn { font-weight: 600; color: var(--green-800); font-size: 0.9rem; }
+    .contact-card .ct { font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 6px; }
+    .contact-card .ce { font-size: 0.82rem; color: var(--green-600); margin-bottom: 2px; }
+    .contact-card .cp { font-size: 0.82rem; color: var(--text-muted); }
+
+    .desc-box {
+      background: var(--cream);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font-size: 0.85rem;
+      color: var(--text-primary);
+      line-height: 1.55;
+      border: 1px solid rgba(27,67,50,0.08);
+      font-style: italic;
+    }
+
+    /* ── EMAIL MODAL ── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(13,43,30,0.55);
+      z-index: 400;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--cream-light);
+      border-radius: var(--radius);
+      width: 100%;
+      max-width: 680px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    .modal-header {
+      background: var(--green-800);
+      color: #fff;
+      padding: 18px 24px;
+      border-radius: var(--radius) var(--radius) 0 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .modal-header h3 { font-size: 1rem; font-weight: 700; }
+    .modal-body {
+      padding: 24px;
+      overflow-y: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .template-tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      padding: 7px 14px;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1.5px solid var(--green-200);
+      background: var(--cream);
+      color: var(--text-primary);
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+    .tab-btn.active { background: var(--green-700); color: #fff; border-color: var(--green-700); }
+    .email-preview {
+      background: var(--cream);
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--green-200);
+      padding: 18px;
+      font-size: 0.875rem;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      word-break: break-word;
+      min-height: 220px;
+      color: var(--text-primary);
+      font-family: inherit;
+    }
+    .email-preview .em-subject { font-weight: 700; color: var(--green-800); margin-bottom: 12px; border-bottom: 1px solid var(--green-200); padding-bottom: 10px; font-size: 0.9rem; }
+    .modal-footer {
+      padding: 16px 24px;
+      border-top: 1px solid rgba(27,67,50,0.1);
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+    .copy-btn {
+      padding: 9px 18px;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      font-family: inherit;
+    }
+    .copy-btn-primary { background: var(--green-600); color: #fff; }
+    .copy-btn-primary:hover { background: var(--green-700); }
+    .copy-btn-secondary { background: var(--cream-dark); color: var(--text-primary); border: 1.5px solid var(--green-200); }
+    .toast {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      background: var(--green-800);
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: var(--radius-sm);
+      font-size: 0.875rem;
+      font-weight: 500;
+      box-shadow: var(--shadow-lg);
+      z-index: 999;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.25s;
+      pointer-events: none;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 768px) {
+      .header-nav { display: none; }
+      .controls { flex-direction: column; }
+      .search-box { min-width: 100%; }
+      table { font-size: 0.8rem; }
+      td, th { padding: 10px 10px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════ HEADER ══════════ -->
+<header class="header">
+  <div class="header-logo">
+    📊 <span>Matt's</span>&nbsp;Dashboard
+  </div>
+  <nav class="header-nav">
+    <a href="index.html">Home</a>
+    <a href="outreach.html" class="active">Outreach</a>
+  </nav>
+</header>
+
+<!-- ══════════ MAIN ══════════ -->
+<main class="page-wrapper">
+  <h1 class="page-title">Salesforce Outreach List</h1>
+  <p class="page-sub">Accounts and contacts from your SF data — ranked by outreach priority. Click a row for details, or use the email button to pull a draft template.</p>
+
+  <!-- STATS -->
+  <div class="stats-row" id="statsRow">
+    <div class="stat-card">
+      <div class="label">Total Accounts</div>
+      <div class="value" id="statTotal">—</div>
+      <div class="sub">in your SF database</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">🔥 High Priority</div>
+      <div class="value" id="statHot">—</div>
+      <div class="sub">contacted before + email</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Dormant 1+ Yr</div>
+      <div class="value" id="statDormant">—</div>
+      <div class="sub">ripe for re-engagement</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Total Contacts</div>
+      <div class="value" id="statContacts">—</div>
+      <div class="sub">with email addresses</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Logged Activities</div>
+      <div class="value" id="statTasks">—</div>
+      <div class="sub">calls, emails, notes</div>
+    </div>
+  </div>
+
+  <!-- CONTROLS -->
+  <div class="controls">
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Search by company, contact, industry…" />
+      <span class="icon">🔍</span>
+    </div>
+    <select class="filter" id="priorityFilter">
+      <option value="">All Priorities</option>
+      <option value="hot">🔥 High Priority</option>
+      <option value="warm">⚡ Warm</option>
+      <option value="cool">✅ Active</option>
+      <option value="cold">🧊 Cold</option>
+    </select>
+    <select class="filter" id="activityFilter">
+      <option value="">All Activity</option>
+      <option value="dormant">Dormant 1+ Year</option>
+      <option value="recent">Active in 6mo</option>
+      <option value="never">Never Contacted</option>
+    </select>
+    <select class="filter" id="sortFilter">
+      <option value="score">Sort: Priority</option>
+      <option value="name">Sort: Company A–Z</option>
+      <option value="last_activity">Sort: Last Activity</option>
+      <option value="task_count">Sort: Most Activity</option>
+    </select>
+    <button class="btn btn-secondary" onclick="resetFilters()">Reset</button>
+    <span class="result-count" id="resultCount"></span>
+  </div>
+
+  <!-- TABLE -->
+  <div class="table-wrap">
+    <table id="outreachTable">
+      <thead>
+        <tr>
+          <th>Company</th>
+          <th>Primary Contact</th>
+          <th>Location</th>
+          <th>Last Activity</th>
+          <th>Tasks</th>
+          <th>Priority</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody">
+        <tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text-muted);">Loading data…</td></tr>
+      </tbody>
+    </table>
+    <div class="pagination" id="pagination" style="display:none;">
+      <span class="info" id="pageInfo"></span>
+      <div class="btns" id="pageBtns"></div>
+    </div>
+  </div>
+</main>
+
+<!-- ══════════ DETAIL PANEL ══════════ -->
+<div class="detail-overlay" id="detailOverlay" onclick="closeDetail()"></div>
+<aside class="detail-panel" id="detailPanel">
+  <div class="detail-header">
+    <div>
+      <h2 id="dpName">—</h2>
+      <div class="industry-tag" id="dpIndustry"></div>
+    </div>
+    <button class="close-btn" onclick="closeDetail()">✕</button>
+  </div>
+  <div class="detail-body" id="dpBody"></div>
+</aside>
+
+<!-- ══════════ EMAIL MODAL ══════════ -->
+<div class="modal-overlay" id="emailModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>✉️ Email Templates — <span id="emailModalTitle">Company</span></h3>
+      <button class="close-btn" onclick="closeEmailModal()" style="color:var(--green-200);">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="template-tabs" id="templateTabs"></div>
+      <div class="email-preview" id="emailPreview"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="copy-btn copy-btn-secondary" onclick="closeEmailModal()">Close</button>
+      <button class="copy-btn copy-btn-primary" onclick="copyEmail()">📋 Copy to Clipboard</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ TOAST ══════════ -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ─────────────────────────────────────────────
+//  EMAIL TEMPLATES
+//  Based on real tone/style pulled from SF activity history
+// ─────────────────────────────────────────────
+const TEMPLATES = [
+  {
+    id: 'reintro',
+    label: '🔄 Re-Introduction',
+    subject: (co, contact) => `Reconnecting — GMH Transportation`,
+    body: (co, contact, city, state, desc) => {
+const fname = contact ? contact.name.split(' ')[0] : 'there';
+return `Subject: Reconnecting — GMH Transportation
+
+Hi ${fname},
+
+I wanted to reach out and reconnect — it's been a while since we've been in touch, and I wanted to see how things are going on your end from a freight and logistics standpoint.
+
+GMH Transportation is an asset-based carrier headquartered in Vermont with 4 terminal locations across the country and coast-to-coast service capabilities. We handle dry van, temperature-controlled, and flatbed freight and have a strong asset presence throughout the Northeast and Mid-Atlantic.
+
+We've worked with a number of manufacturers in your space, and I'd love to reconnect to see if there might be any opportunities worth exploring — whether that's spot coverage, dedicated lanes, or just getting back on your carrier list.
+
+Would you be open to a quick 15-minute call this week or next?
+
+Best,
+Matt Patrick
+GMH Transportation Services
+Matt@gmhtrans.com`;
+    }
+  },
+  {
+    id: 'cold_asset',
+    label: '🚛 Asset Presence',
+    subject: (co, contact) => `GMH Transportation — Asset Presence Near ${co}`,
+    body: (co, contact, city, state, desc) => {
+const fname = contact ? contact.name.split(' ')[0] : 'there';
+const loc = city && state ? `${city}, ${state}` : (city || state || 'your facility');
+return `Subject: GMH Transportation — Asset Presence Near ${loc}
+
+Hi ${fname},
+
+I'm reaching out because GMH Transportation regularly moves freight in and out of your area, and I wanted to explore whether there might be an opportunity to put that capacity to work for ${co}.
+
+We're an asset-based carrier (not a broker) headquartered in Vermont with 4 terminal locations and dedicated lanes throughout the Northeast, Mid-Atlantic, and beyond. Because we're already running assets nearby, we can often offer competitive rates and quick response times — particularly for dry van and temperature-controlled freight.
+
+I'd love to learn more about your transportation procurement process and see if there are lanes where we could add value.
+
+Are you the right person to connect with on this, or would you be able to point me in the right direction?
+
+Best,
+Matt Patrick
+GMH Transportation Services
+Matt@gmhtrans.com`;
+    }
+  },
+  {
+    id: 'warm_followup',
+    label: '📞 Post-Call Follow-Up',
+    subject: (co, contact) => `Follow-Up — GMH Transportation / ${co}`,
+    body: (co, contact, city, state, desc) => {
+const fname = contact ? contact.name.split(' ')[0] : 'there';
+return `Subject: Follow-Up — GMH Transportation / ${co}
+
+Hi ${fname},
+
+Thank you for taking the time to speak with me earlier — I really appreciate it.
+
+As discussed, GMH Transportation is an asset-based carrier with strong lane coverage in the Northeast and Mid-Atlantic. We're particularly well-positioned for:
+
+  • Dry van FTL and LTL freight
+  • Temperature-controlled (refrigerated) shipments
+  • Flatbed and specialized loads
+  • Intermodal and brokerage solutions when needed
+
+I'll follow up with our rate sheet and relevant lane information as we discussed. In the meantime, please don't hesitate to reach out if anything comes up in the near term — I'm happy to help cover a load on short notice.
+
+Looking forward to the possibility of working together.
+
+Best,
+Matt Patrick
+GMH Transportation Services
+Matt@gmhtrans.com`;
+    }
+  },
+  {
+    id: 'lane_specific',
+    label: '🗺️ Lane-Specific Pitch',
+    subject: (co, contact) => `Lane Coverage Inquiry — GMH Transportation`,
+    body: (co, contact, city, state, desc) => {
+const fname = contact ? contact.name.split(' ')[0] : 'there';
+const loc = city && state ? `${city}, ${state}` : (city || state || 'your facilities');
+return `Subject: Lane Coverage Inquiry — GMH Transportation
+
+Hi ${fname},
+
+I'm reaching out to learn more about your transportation needs, specifically for your ${loc} location.
+
+GMH Trans is an asset-based carrier headquartered in Vermont with 4 terminals, 90+ drivers, and 240+ trailers. We have established lanes running in and out of your region regularly, which means we can offer reliable capacity without the volatility that comes with relying solely on the spot market.
+
+We specialize in:
+  • Full Truckload (FTL) — direct point-to-point service
+  • Less-Than-Truckload (LTL) — cost-effective for smaller loads
+  • Refrigerated freight — temperature-controlled door to door
+  • Drop trailer programs — for shippers who need flex loading windows
+
+If you have any lanes that could use a reliable asset-based option, or if you're running a sourcing event in the coming months, I'd love to earn a spot on your carrier list.
+
+Would you be open to a brief call?
+
+Best,
+Matt Patrick
+GMH Transportation Services
+Matt@gmhtrans.com`;
+    }
+  },
+  {
+    id: 'referral',
+    label: '🤝 Referral / Intro Ask',
+    subject: (co, contact) => `Quick Introduction — GMH Transportation`,
+    body: (co, contact, city, state, desc) => {
+const fname = contact ? contact.name.split(' ')[0] : 'there';
+return `Subject: Quick Introduction — GMH Transportation
+
+Hi ${fname},
+
+I hope this note finds you well. I'm reaching out to introduce GMH Transportation and see if you might be able to point me toward the right person on your team to discuss freight and logistics.
+
+We're a family-owned, asset-based carrier based in Vermont — 25+ years in the industry, coast-to-coast service, and a reputation for reliability that we're proud of. We work with manufacturers throughout New England and the Mid-Atlantic and are always looking to build relationships with new partners.
+
+If transportation or logistics doesn't fall within your purview, I'd really appreciate a quick pointer to the right contact at ${co}. And if it does — I'd love to set up a brief intro call.
+
+Either way, thank you for your time.
+
+Best,
+Matt Patrick
+GMH Transportation Services
+Matt@gmhtrans.com`;
+    }
+  }
+];
+
+// ─────────────────────────────────────────────
+//  STATE
+// ─────────────────────────────────────────────
+let allAccounts = [];
+let filtered = [];
+let currentPage = 1;
+const PAGE_SIZE = 25;
+let currentEmailAccount = null;
+let activeTemplate = 0;
+
+// ─────────────────────────────────────────────
+//  INIT
+// ─────────────────────────────────────────────
+fetch('outreach_data.json')
+  .then(r => r.json())
+  .then(data => {
+    allAccounts = data.accounts;
+    renderStats(data);
+    applyFilters();
+  })
+  .catch(err => {
+    document.getElementById('tableBody').innerHTML =
+      `<tr><td colspan="7" style="text-align:center;padding:40px;color:#b91c1c;">⚠️ Could not load outreach data. Make sure outreach_data.json is in the same folder.</td></tr>`;
+  });
+
+function renderStats(data) {
+  const accts = data.accounts;
+  document.getElementById('statTotal').textContent = accts.length;
+  document.getElementById('statHot').textContent = accts.filter(a => a.score >= 7).length;
+  document.getElementById('statDormant').textContent = accts.filter(a => a.days_since && a.days_since > 365).length;
+  document.getElementById('statContacts').textContent = accts.reduce((n, a) => n + a.all_contacts.filter(c => c.email).length, 0);
+  document.getElementById('statTasks').textContent = accts.reduce((n, a) => n + a.task_count, 0).toLocaleString();
+}
+
+// ─────────────────────────────────────────────
+//  FILTER + RENDER
+// ─────────────────────────────────────────────
+function applyFilters() {
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  const priority = document.getElementById('priorityFilter').value;
+  const activity = document.getElementById('activityFilter').value;
+  const sort = document.getElementById('sortFilter').value;
+
+  filtered = allAccounts.filter(a => {
+    // Search
+    if (search) {
+      const haystack = [
+        a.name, a.industry, a.city, a.state,
+        a.primary_contact_name, a.primary_contact_title,
+        a.primary_contact_email, a.description
+      ].join(' ').toLowerCase();
+      if (!haystack.includes(search)) return false;
+    }
+    // Priority
+    if (priority === 'hot' && a.score < 7) return false;
+    if (priority === 'warm' && (a.score < 5 || a.score >= 7)) return false;
+    if (priority === 'cool' && (a.score < 3 || a.score >= 5)) return false;
+    if (priority === 'cold' && a.score >= 3) return false;
+    // Activity
+    if (activity === 'dormant' && !(a.days_since && a.days_since > 365)) return false;
+    if (activity === 'recent' && !(a.days_since && a.days_since <= 180)) return false;
+    if (activity === 'never' && a.task_count > 0) return false;
+    return true;
+  });
+
+  // Sort
+  filtered.sort((a, b) => {
+    if (sort === 'name') return a.name.localeCompare(b.name);
+    if (sort === 'last_activity') {
+      const da = a.last_activity === 'Never' ? '0000' : a.last_activity;
+      const db = b.last_activity === 'Never' ? '0000' : b.last_activity;
+      return da < db ? 1 : -1;
+    }
+    if (sort === 'task_count') return b.task_count - a.task_count;
+    return b.score - a.score; // default: priority
+  });
+
+  currentPage = 1;
+  document.getElementById('resultCount').textContent = `${filtered.length} accounts`;
+  renderPage();
+}
+
+function renderPage() {
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const pageItems = filtered.slice(start, start + PAGE_SIZE);
+  const tbody = document.getElementById('tableBody');
+
+  if (!pageItems.length) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text-muted);">No accounts match your filters.</td></tr>`;
+    document.getElementById('pagination').style.display = 'none';
+    return;
+  }
+
+  tbody.innerHTML = pageItems.map((a, i) => {
+    const priority = getPriority(a.score);
+    const dormancy = getDormancyLabel(a.days_since);
+    const contact = a.all_contacts.find(c => c.email) || a.all_contacts[0] || null;
+    const idx = start + i;
+    return `
+      <tr onclick="openDetail(${idx})">
+        <td>
+          <div class="company-name">${esc(a.name)}</div>
+          ${a.industry ? `<div class="company-industry">${esc(a.industry)}</div>` : ''}
+        </td>
+        <td>
+          ${contact ? `
+            <div class="contact-name">${esc(contact.name)}</div>
+            <div class="contact-title">${esc(contact.title)}</div>
+            ${contact.email ? `<div class="contact-email">${esc(contact.email)}</div>` : ''}
+          ` : '<span style="color:var(--text-muted);font-size:0.8rem;">No contact</span>'}
+        </td>
+        <td>${a.city && a.state ? `${esc(a.city)}, ${esc(a.state)}` : esc(a.city || a.state || '—')}</td>
+        <td>
+          <div class="${dormancy.cls}">${esc(a.last_activity)}</div>
+          ${a.days_since ? `<div style="font-size:0.75rem;color:var(--text-muted);">${dormancy.age}</div>` : ''}
+        </td>
+        <td style="text-align:center;font-weight:600;color:var(--text-secondary);">${a.task_count}</td>
+        <td><span class="badge ${priority.cls}">${priority.label}</span></td>
+        <td>
+          <div class="action-btns">
+            <button class="action-btn action-email" onclick="event.stopPropagation();openEmail(${idx})">✉️ Email</button>
+            <button class="action-btn action-view" onclick="event.stopPropagation();openDetail(${idx})">View →</button>
+          </div>
+        </td>
+      </tr>`;
+  }).join('');
+
+  renderPagination();
+}
+
+function renderPagination() {
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+  const pg = document.getElementById('pagination');
+  const info = document.getElementById('pageInfo');
+  const btns = document.getElementById('pageBtns');
+
+  if (totalPages <= 1) { pg.style.display = 'none'; return; }
+  pg.style.display = 'flex';
+
+  const start = (currentPage - 1) * PAGE_SIZE + 1;
+  const end = Math.min(currentPage * PAGE_SIZE, filtered.length);
+  info.textContent = `Showing ${start}–${end} of ${filtered.length}`;
+
+  let html = `<button class="page-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹</button>`;
+  for (let p = Math.max(1, currentPage-2); p <= Math.min(totalPages, currentPage+2); p++) {
+    html += `<button class="page-btn ${p===currentPage?'active':''}" onclick="goPage(${p})">${p}</button>`;
+  }
+  html += `<button class="page-btn" onclick="goPage(${currentPage+1})" ${currentPage===totalPages?'disabled':''}>›</button>`;
+  btns.innerHTML = html;
+}
+
+function goPage(p) {
+  const total = Math.ceil(filtered.length / PAGE_SIZE);
+  if (p < 1 || p > total) return;
+  currentPage = p;
+  renderPage();
+  window.scrollTo({top: 0, behavior:'smooth'});
+}
+
+// ─────────────────────────────────────────────
+//  DETAIL PANEL
+// ─────────────────────────────────────────────
+function openDetail(idx) {
+  const a = filtered[idx];
+  document.getElementById('dpName').textContent = a.name;
+  document.getElementById('dpIndustry').textContent = a.industry || '';
+
+  const priority = getPriority(a.score);
+  const dormancy = getDormancyLabel(a.days_since);
+
+  const body = document.getElementById('dpBody');
+  const contactsHTML = (a.all_contacts || []).map(c => `
+    <div class="contact-card">
+      <div class="cn">${esc(c.name) || '(unnamed)'}</div>
+      <div class="ct">${esc(c.title) || 'No title on file'}</div>
+      ${c.email ? `<div class="ce">✉️ <a href="mailto:${esc(c.email)}">${esc(c.email)}</a></div>` : ''}
+      ${c.phone ? `<div class="cp">📞 ${esc(c.phone)}</div>` : ''}
+    </div>
+  `).join('') || '<p style="font-size:0.85rem;color:var(--text-muted);">No contacts on file.</p>';
+
+  body.innerHTML = `
+    <div class="detail-section">
+      <h3>Account Info</h3>
+      ${a.city || a.state ? `<div class="detail-row"><span class="lbl">Location</span><span class="val">${esc(a.city || '')}${a.city && a.state ? ', ' : ''}${esc(a.state || '')}</span></div>` : ''}
+      ${a.industry ? `<div class="detail-row"><span class="lbl">Industry</span><span class="val">${esc(a.industry)}</span></div>` : ''}
+      ${a.phone ? `<div class="detail-row"><span class="lbl">Phone</span><span class="val">${esc(a.phone)}</span></div>` : ''}
+      ${a.website ? `<div class="detail-row"><span class="lbl">Website</span><span class="val"><a href="${esc(a.website)}" target="_blank">${esc(a.website)}</a></span></div>` : ''}
+      <div class="detail-row"><span class="lbl">Priority</span><span class="val"><span class="badge ${priority.cls}">${priority.label}</span></span></div>
+      <div class="detail-row"><span class="lbl">Last Activity</span><span class="val ${dormancy.cls}">${esc(a.last_activity)}</span></div>
+      <div class="detail-row"><span class="lbl">Logged Tasks</span><span class="val">${a.task_count}</span></div>
+      <div class="detail-row"><span class="lbl">Contacts</span><span class="val">${a.contact_count}</span></div>
+    </div>
+
+    ${a.description ? `
+    <div class="detail-section">
+      <h3>Notes from Salesforce</h3>
+      <div class="desc-box">${esc(a.description)}</div>
+    </div>` : ''}
+
+    <div class="detail-section">
+      <h3>Contacts (${a.all_contacts ? a.all_contacts.length : 0})</h3>
+      ${contactsHTML}
+    </div>
+
+    <div style="padding-top:4px;">
+      <button class="btn btn-primary" style="width:100%;" onclick="openEmail(${idx})">✉️ Open Email Templates</button>
+    </div>
+  `;
+
+  document.getElementById('detailOverlay').classList.add('open');
+  document.getElementById('detailPanel').classList.add('open');
+}
+
+function closeDetail() {
+  document.getElementById('detailOverlay').classList.remove('open');
+  document.getElementById('detailPanel').classList.remove('open');
+}
+
+// ─────────────────────────────────────────────
+//  EMAIL MODAL
+// ─────────────────────────────────────────────
+function openEmail(idx) {
+  currentEmailAccount = filtered[idx];
+  const a = currentEmailAccount;
+  document.getElementById('emailModalTitle').textContent = a.name;
+  document.getElementById('emailModal').classList.add('open');
+
+  // Render tabs
+  document.getElementById('templateTabs').innerHTML = TEMPLATES.map((t, i) =>
+    `<button class="tab-btn ${i===0?'active':''}" onclick="switchTemplate(${i})">${t.label}</button>`
+  ).join('');
+
+  activeTemplate = 0;
+  renderEmailPreview();
+}
+
+function switchTemplate(i) {
+  activeTemplate = i;
+  document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
+    btn.classList.toggle('active', idx === i);
+  });
+  renderEmailPreview();
+}
+
+function renderEmailPreview() {
+  const a = currentEmailAccount;
+  const t = TEMPLATES[activeTemplate];
+  const contact = a.all_contacts ? a.all_contacts.find(c => c.email) || a.all_contacts[0] || null : null;
+  const body = t.body(a.name, contact, a.city, a.state, a.description);
+  document.getElementById('emailPreview').textContent = body;
+}
+
+function closeEmailModal() {
+  document.getElementById('emailModal').classList.remove('open');
+}
+
+function copyEmail() {
+  const text = document.getElementById('emailPreview').textContent;
+  navigator.clipboard.writeText(text).then(() => showToast('✅ Email copied to clipboard!')).catch(() => {
+    // Fallback
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('✅ Email copied to clipboard!');
+  });
+}
+
+// ─────────────────────────────────────────────
+//  HELPERS
+// ─────────────────────────────────────────────
+function getPriority(score) {
+  if (score >= 8) return { label: '🔥 High', cls: 'badge-hot' };
+  if (score >= 6) return { label: '⚡ Warm', cls: 'badge-warm' };
+  if (score >= 3) return { label: '✅ Active', cls: 'badge-cool' };
+  return { label: '🧊 Cold', cls: 'badge-cold' };
+}
+
+function getDormancyLabel(days) {
+  if (!days) return { cls: 'dormant-ok', age: '', label: '' };
+  if (days > 730) return { cls: 'dormant-label dormant-hot', age: `${Math.floor(days/365)}+ yrs ago`, label: 'Long dormant' };
+  if (days > 365) return { cls: 'dormant-label dormant-warm', age: `~${Math.floor(days/30)} mo ago`, label: 'Over a year' };
+  if (days > 180) return { cls: 'dormant-label dormant-warm', age: `~${Math.floor(days/30)} mo ago`, label: 'Dormant' };
+  return { cls: 'dormant-label dormant-ok', age: `${days}d ago`, label: '' };
+}
+
+function esc(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+function resetFilters() {
+  document.getElementById('searchInput').value = '';
+  document.getElementById('priorityFilter').value = '';
+  document.getElementById('activityFilter').value = '';
+  document.getElementById('sortFilter').value = 'score';
+  applyFilters();
+}
+
+// Event listeners
+document.getElementById('searchInput').addEventListener('input', applyFilters);
+document.getElementById('priorityFilter').addEventListener('change', applyFilters);
+document.getElementById('activityFilter').addEventListener('change', applyFilters);
+document.getElementById('sortFilter').addEventListener('change', applyFilters);
+
+// Close modal on overlay click
+document.getElementById('emailModal').addEventListener('click', function(e) {
+  if (e.target === this) closeEmailModal();
+});
+</script>
+</body>
+</html>
