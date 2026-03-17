@@ -766,7 +766,7 @@ function renderStats(data) {
   document.getElementById('statTotal').textContent = accts.length;
   document.getElementById('statHot').textContent = accts.filter(a => a.score >= 7).length;
   document.getElementById('statDormant').textContent = accts.filter(a => a.days_since && a.days_since > 365).length;
-  document.getElementById('statContacts').textContent = accts.reduce((n, a) => n + a.all_contacts.filter(c => c.email).length, 0);
+  document.getElementById('statContacts').textContent = accts.reduce((n, a) => n + a.contacts.filter(c => c.email).length, 0);
   document.getElementById('statTasks').textContent = accts.reduce((n, a) => n + a.task_count, 0).toLocaleString();
 }
 
@@ -832,7 +832,7 @@ function renderPage() {
   tbody.innerHTML = pageItems.map((a, i) => {
     const priority = getPriority(a.score);
     const dormancy = getDormancyLabel(a.days_since);
-    const contact = a.all_contacts.find(c => c.email) || a.all_contacts[0] || null;
+    const contact = a.contacts.find(c => c.email) || a.contacts[0] || null;
     const idx = start + i;
     return `
       <tr onclick="openDetail(${idx})">
@@ -907,7 +907,7 @@ function openDetail(idx) {
   const dormancy = getDormancyLabel(a.days_since);
 
   const body = document.getElementById('dpBody');
-  const contactsHTML = (a.all_contacts || []).map(c => `
+  const contactsHTML = (a.contacts || []).map(c => `
     <div class="contact-card">
       <div class="cn">${esc(c.name) || '(unnamed)'}</div>
       <div class="ct">${esc(c.title) || 'No title on file'}</div>
@@ -936,7 +936,7 @@ function openDetail(idx) {
     </div>` : ''}
 
     <div class="detail-section">
-      <h3>Contacts (${a.all_contacts ? a.all_contacts.length : 0})</h3>
+      <h3>Contacts (${a.contacts ? a.contacts.length : 0})</h3>
       ${contactsHTML}
     </div>
 
@@ -983,7 +983,7 @@ function switchTemplate(i) {
 function renderEmailPreview() {
   const a = currentEmailAccount;
   const t = TEMPLATES[activeTemplate];
-  const contact = a.all_contacts ? a.all_contacts.find(c => c.email) || a.all_contacts[0] || null : null;
+  const contact = a.contacts ? a.contacts.find(c => c.email) || a.contacts[0] || null : null;
   const body = t.body(a.name, contact, a.city, a.state, a.description);
   document.getElementById('emailPreview').textContent = body;
 }
