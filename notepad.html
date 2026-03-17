@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Notepad — Matt's Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    :root {
+      --green-900:#0D2B1E; --green-800:#1B4332; --green-700:#2D6A4F;
+      --green-600:#40916C; --green-500:#52B788; --green-400:#74C69D;
+      --green-300:#95D5B2; --green-200:#B7E4C7; --green-100:#D8F3DC;
+      --cream:#FEFAE0; --cream-light:#FFFDF7; --cream-dark:#F0E8C0;
+      --text-primary:#1B4332; --text-secondary:#40916C; --text-muted:#74C69D;
+      --amber:#E9C46A; --amber-dark:#D4A017; --danger:#C1321F;
+      --shadow-sm:0 1px 3px rgba(27,67,50,0.08);
+      --shadow-md:0 4px 12px rgba(27,67,50,0.12);
+      --shadow-lg:0 8px 32px rgba(27,67,50,0.18);
+      --radius:14px; --radius-sm:8px;
+    }
+    html, body { height:100%; }
+    body { font-family:'Inter',sans-serif; background:var(--cream); color:var(--text-primary); display:flex; flex-direction:column; min-height:100vh; }
+
+    /* ── HEADER ── */
+    .header { background:var(--green-800); padding:0 28px; height:64px; flex-shrink:0; display:flex; align-items:center; justify-content:space-between; box-shadow:0 2px 12px rgba(0,0,0,0.25); position:sticky; top:0; z-index:100; }
+    .header-logo { color:#fff; font-weight:700; font-size:1.1rem; display:flex; align-items:center; gap:10px; }
+    .header-logo span { color:var(--green-300); }
+    .header-nav { display:flex; gap:8px; align-items:center; }
+    .header-nav a { color:var(--green-300); text-decoration:none; font-size:0.85rem; font-weight:500; padding:6px 14px; border-radius:6px; transition:background 0.2s,color 0.2s; }
+    .header-nav a:hover { background:rgba(255,255,255,0.1); color:#fff; }
+    .header-nav a.active { background:var(--green-600); color:#fff; }
+
+    /* ── LAYOUT ── */
+    .app { display:flex; flex:1; overflow:hidden; height:calc(100vh - 64px); }
+
+    /* ── LEFT SIDEBAR ── */
+    .sidebar {
+      width:260px; flex-shrink:0;
+      background:var(--cream-light);
+      border-right:1px solid var(--green-200);
+      display:flex; flex-direction:column;
+      overflow:hidden;
+    }
+    .sidebar-header { padding:16px; border-bottom:1px solid var(--green-200); }
+    .sidebar-title { font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:var(--text-secondary); margin-bottom:10px; }
+    .search-wrap { position:relative; }
+    .search-wrap input {
+      width:100%; padding:8px 32px 8px 12px;
+      border:1.5px solid var(--green-200); border-radius:var(--radius-sm);
+      font-size:0.85rem; font-family:inherit; background:var(--cream);
+      color:var(--text-primary); outline:none; transition:border-color 0.2s;
+    }
+    .search-wrap input:focus { border-color:var(--green-500); }
+    .search-wrap .s-icon { position:absolute; right:10px; top:50%; transform:translateY(-50%); color:var(--text-muted); font-size:0.85rem; pointer-events:none; }
+    .search-clear { position:absolute; right:8px; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:1rem; padding:0 2px; display:none; }
+    .search-clear.visible { display:block; }
+
+    .sidebar-list { flex:1; overflow-y:auto; }
+    .sidebar-section { padding:10px 16px 4px; font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:var(--text-muted); }
+    .day-item {
+      display:flex; align-items:flex-start; gap:0; padding:10px 16px;
+      cursor:pointer; border-left:3px solid transparent;
+      transition:background 0.15s, border-color 0.15s;
+      border-bottom:1px solid rgba(27,67,50,0.05);
+    }
+    .day-item:hover { background:var(--green-100); }
+    .day-item.active { background:var(--green-100); border-left-color:var(--green-600); }
+    .day-item.today .day-name { color:var(--green-800); }
+    .day-info { flex:1; min-width:0; }
+    .day-name { font-size:0.85rem; font-weight:600; color:var(--text-primary); margin-bottom:2px; }
+    .day-preview { font-size:0.75rem; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .day-words { font-size:0.7rem; color:var(--text-muted); margin-top:2px; }
+    .today-badge { font-size:0.65rem; font-weight:700; background:var(--green-600); color:#fff; padding:1px 6px; border-radius:100px; margin-left:6px; vertical-align:middle; }
+    .no-results { padding:20px 16px; font-size:0.82rem; color:var(--text-muted); text-align:center; }
+
+    /* Search highlights in sidebar */
+    .search-hit { background:#fef08a; border-radius:2px; }
+
+    /* ── MAIN EDITOR ── */
+    .editor-area { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+    .editor-toolbar {
+      padding:12px 24px;
+      background:var(--cream-light);
+      border-bottom:1px solid var(--green-200);
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      flex-shrink:0;
+    }
+    .editor-date-label { font-size:1.1rem; font-weight:700; color:var(--green-900); }
+    .editor-date-sub   { font-size:0.78rem; color:var(--text-secondary); margin-top:1px; }
+    .toolbar-right { display:flex; align-items:center; gap:10px; }
+    .save-status { font-size:0.78rem; color:var(--text-muted); display:flex; align-items:center; gap:5px; }
+    .save-dot { width:7px; height:7px; border-radius:50%; background:var(--green-400); flex-shrink:0; }
+    .save-dot.saving { background:var(--amber-dark); animation:pulse 0.8s infinite; }
+    .save-dot.saved  { background:var(--green-500); }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+    .toolbar-btn {
+      padding:7px 14px; border-radius:var(--radius-sm); font-size:0.82rem;
+      font-weight:600; cursor:pointer; border:none; font-family:inherit;
+      transition:background 0.2s;
+    }
+    .btn-outline { background:var(--cream-dark); color:var(--text-primary); border:1.5px solid var(--green-200); }
+    .btn-outline:hover { background:var(--green-100); }
+    .btn-green  { background:var(--green-600); color:#fff; } .btn-green:hover  { background:var(--green-700); }
+    .word-count { font-size:0.78rem; color:var(--text-muted); white-space:nowrap; }
+
+    /* ── SEARCH RESULTS MODE ── */
+    #searchResultsArea { display:none; flex:1; overflow-y:auto; padding:24px; }
+    .sr-header { font-size:1rem; font-weight:700; color:var(--green-900); margin-bottom:4px; }
+    .sr-sub { font-size:0.85rem; color:var(--text-secondary); margin-bottom:20px; }
+    .sr-result { background:var(--cream-light); border-radius:var(--radius-sm); border:1px solid rgba(27,67,50,0.1); padding:16px 20px; margin-bottom:12px; cursor:pointer; transition:box-shadow 0.15s; }
+    .sr-result:hover { box-shadow:var(--shadow-md); }
+    .sr-date { font-size:0.78rem; font-weight:700; color:var(--green-700); margin-bottom:6px; }
+    .sr-snippet { font-size:0.875rem; color:var(--text-primary); line-height:1.6; }
+    .sr-snippet mark { background:#fef08a; border-radius:2px; padding:0 2px; font-style:normal; color:var(--green-900); }
+    .no-sr { text-align:center; padding:60px 24px; color:var(--text-muted); }
+    .no-sr .icon { font-size:2.5rem; margin-bottom:12px; }
+
+    /* ── NOTEPAD TEXTAREA ── */
+    #notepadWrap { flex:1; overflow:hidden; display:flex; flex-direction:column; }
+    #notepad {
+      flex:1;
+      width:100%; height:100%;
+      padding:28px 36px;
+      font-family:'Inter', sans-serif;
+      font-size:1rem;
+      line-height:1.8;
+      color:var(--text-primary);
+      background:var(--cream);
+      border:none; outline:none; resize:none;
+      /* Subtle lined paper look */
+      background-image: repeating-linear-gradient(
+        to bottom,
+        transparent,
+        transparent 35px,
+        rgba(27,67,50,0.06) 35px,
+        rgba(27,67,50,0.06) 36px
+      );
+      background-attachment:local;
+    }
+    #notepad::placeholder { color:var(--text-muted); font-style:italic; }
+    #notepad:focus { background-color:var(--cream-light); }
+
+    /* ── TOAST ── */
+    .toast { position:fixed; bottom:24px; right:24px; background:var(--green-800); color:#fff; padding:11px 18px; border-radius:var(--radius-sm); font-size:0.875rem; font-weight:500; box-shadow:var(--shadow-lg); z-index:999; opacity:0; transform:translateY(8px); transition:all 0.25s; pointer-events:none; }
+    .toast.show { opacity:1; transform:translateY(0); }
+
+    /* ── DELETE CONFIRM ── */
+    .modal-overlay { position:fixed; inset:0; background:rgba(13,43,30,0.5); z-index:200; display:none; align-items:center; justify-content:center; }
+    .modal-overlay.open { display:flex; }
+    .modal { background:var(--cream-light); border-radius:var(--radius); padding:28px; max-width:400px; width:90%; box-shadow:var(--shadow-lg); }
+    .modal h3 { font-size:1rem; font-weight:700; margin-bottom:8px; }
+    .modal p { font-size:0.875rem; color:var(--text-secondary); margin-bottom:20px; line-height:1.5; }
+    .modal-btns { display:flex; gap:10px; justify-content:flex-end; }
+    .modal-btn { padding:8px 18px; border-radius:var(--radius-sm); font-size:0.85rem; font-weight:600; cursor:pointer; border:none; font-family:inherit; }
+
+    @media(max-width:700px) {
+      .sidebar { width:200px; }
+      #notepad { padding:18px; font-size:0.95rem; }
+      .header-nav a { padding:6px 8px; font-size:0.78rem; }
+    }
+    @media(max-width:500px) {
+      .sidebar { display:none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header class="header">
+  <div class="header-logo">📊 <span>Matt's</span>&nbsp;Dashboard</div>
+  <nav class="header-nav">
+    <a href="index.html">Home</a>
+    <a href="outreach.html">Outreach</a>
+    <a href="notepad.html" class="active">Notepad</a>
+  </nav>
+</header>
+
+<div class="app">
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-title">Daily Notes</div>
+      <div class="search-wrap">
+        <input type="text" id="sidebarSearch" placeholder="Search all notes…" autocomplete="off" />
+        <span class="s-icon" id="searchIcon">🔍</span>
+        <button class="search-clear" id="searchClear" onclick="clearSearch()" title="Clear search">✕</button>
+      </div>
+    </div>
+    <div class="sidebar-list" id="sidebarList"></div>
+  </aside>
+
+  <!-- ── EDITOR ── -->
+  <div class="editor-area">
+
+    <!-- Toolbar -->
+    <div class="editor-toolbar">
+      <div>
+        <div class="editor-date-label" id="editorDateLabel">Loading…</div>
+        <div class="editor-date-sub" id="editorDateSub"></div>
+      </div>
+      <div class="toolbar-right">
+        <span class="word-count" id="wordCount"></span>
+        <span class="save-status" id="saveStatus">
+          <span class="save-dot saved" id="saveDot"></span>
+          <span id="saveText">Saved</span>
+        </span>
+        <button class="toolbar-btn btn-outline" id="deleteBtn" onclick="confirmDelete()" title="Delete this day's note" style="display:none;">🗑 Delete</button>
+        <button class="toolbar-btn btn-green" onclick="saveNow()">💾 Save</button>
+      </div>
+    </div>
+
+    <!-- Search results pane (hidden unless searching) -->
+    <div id="searchResultsArea">
+      <div class="sr-header" id="srHeader"></div>
+      <div class="sr-sub" id="srSub"></div>
+      <div id="srList"></div>
+    </div>
+
+    <!-- Notepad -->
+    <div id="notepadWrap">
+      <textarea id="notepad" placeholder="Start typing… your notes auto-save every 30 seconds and are stored by date.
+
+Tuesday 3/17/26 ideas:
+• Called Brett at AAK Foodservice — open to rates convo next week
+• Rate sheet for Hannaford lanes due Thursday
+• Follow up with Scott at ACPI re: PA freight
+…"></textarea>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── DELETE CONFIRM MODAL ── -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal">
+    <h3>Delete this note?</h3>
+    <p id="deleteModalMsg">This will permanently delete the note for <strong></strong>. This can't be undone.</p>
+    <div class="modal-btns">
+      <button class="modal-btn" style="background:var(--cream-dark);border:1.5px solid var(--green-200);color:var(--text-primary);" onclick="closeDeleteModal()">Cancel</button>
+      <button class="modal-btn" style="background:#fee2e2;color:var(--danger);" onclick="doDelete()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ════════════════════════════════════════════
+//  STORAGE KEY
+// ════════════════════════════════════════════
+const LS_PREFIX = 'gmh_notepad_';
+const LS_INDEX  = 'gmh_notepad_index'; // sorted array of dateKeys
+
+// ════════════════════════════════════════════
+//  DATE HELPERS
+// ════════════════════════════════════════════
+const DAYS   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const SHORT_MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+function todayKey() {
+  const d = new Date();
+  // YYYY-MM-DD for storage key (sortable)
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function keyToLabel(key) {
+  // key = "YYYY-MM-DD"
+  const [y, m, d] = key.split('-').map(Number);
+  const dt = new Date(y, m-1, d);
+  const dayName = DAYS[dt.getDay()];
+  // "Tuesday 3/17/26"
+  return `${dayName} ${m}/${d}/${String(y).slice(2)}`;
+}
+
+function keyToFull(key) {
+  const [y, m, d] = key.split('-').map(Number);
+  const dt = new Date(y, m-1, d);
+  return `${DAYS[dt.getDay()]}, ${MONTHS[m-1]} ${d}, ${y}`;
+}
+
+function keyToShort(key) {
+  const [y, m, d] = key.split('-').map(Number);
+  return `${SHORT_MONTHS[m-1]} ${d}, ${String(y).slice(2)}`;
+}
+
+function isToday(key) { return key === todayKey(); }
+
+// ════════════════════════════════════════════
+//  INDEX MANAGEMENT
+// ════════════════════════════════════════════
+function getIndex() {
+  try { return JSON.parse(localStorage.getItem(LS_INDEX)||'[]'); } catch(e){ return []; }
+}
+function saveIndex(idx) { localStorage.setItem(LS_INDEX, JSON.stringify(idx)); }
+function addToIndex(key) {
+  const idx = getIndex();
+  if(!idx.includes(key)) { idx.push(key); idx.sort((a,b)=>b.localeCompare(a)); saveIndex(idx); }
+}
+function removeFromIndex(key) {
+  const idx = getIndex().filter(k=>k!==key);
+  saveIndex(idx);
+}
+
+// ════════════════════════════════════════════
+//  NOTE STORAGE
+// ════════════════════════════════════════════
+function loadNote(key) {
+  return localStorage.getItem(LS_PREFIX+key)||'';
+}
+function saveNote(key, text) {
+  if(text.trim()) {
+    localStorage.setItem(LS_PREFIX+key, text);
+    addToIndex(key);
+  } else {
+    // Empty note — remove from storage
+    localStorage.removeItem(LS_PREFIX+key);
+    removeFromIndex(key);
+  }
+}
+function deleteNote(key) {
+  localStorage.removeItem(LS_PREFIX+key);
+  removeFromIndex(key);
+}
+function getAllNotes() {
+  return getIndex().map(key=>({ key, text:loadNote(key) }));
+}
+
+// ════════════════════════════════════════════
+//  STATE
+// ════════════════════════════════════════════
+let currentKey    = todayKey();
+let autoSaveTimer = null;
+let saveDebounce  = null;
+let isSearchMode  = false;
+let searchQuery   = '';
+
+// ════════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', () => {
+  // Ensure today is always in index (even if empty until typed)
+  loadDay(todayKey());
+  renderSidebar();
+  startAutoSave();
+  setupKeyboardShortcuts();
+});
+
+// Save before page closes
+window.addEventListener('beforeunload', () => {
+  saveCurrentNote();
+});
+
+// ════════════════════════════════════════════
+//  LOAD A DAY
+// ════════════════════════════════════════════
+function loadDay(key) {
+  saveCurrentNote(); // save whatever was open
+  currentKey = key;
+
+  const notepad = document.getElementById('notepad');
+  notepad.value = loadNote(key);
+
+  // Update toolbar
+  document.getElementById('editorDateLabel').textContent = keyToLabel(key);
+  document.getElementById('editorDateSub').textContent   = isToday(key)
+    ? `Today · ${new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}`
+    : keyToFull(key);
+
+  // Show delete button only for non-empty non-today notes
+  const hasContent = notepad.value.trim().length > 0;
+  document.getElementById('deleteBtn').style.display = (hasContent && !isToday(key)) ? '' : 'none';
+
+  updateWordCount();
+  setSaveStatus('saved');
+  renderSidebar();
+
+  // Exit search mode when picking a day
+  if(isSearchMode) exitSearchMode();
+
+  notepad.focus();
+}
+
+// ════════════════════════════════════════════
+//  SAVE
+// ════════════════════════════════════════════
+function saveCurrentNote() {
+  const text = document.getElementById('notepad').value;
+  saveNote(currentKey, text);
+}
+
+function saveNow() {
+  saveCurrentNote();
+  setSaveStatus('saved');
+  renderSidebar();
+  showToast(`✅ Saved — ${keyToLabel(currentKey)}`);
+  const hasContent = document.getElementById('notepad').value.trim().length > 0;
+  document.getElementById('deleteBtn').style.display = (hasContent && !isToday(currentKey)) ? '' : 'none';
+}
+
+function onNoteInput() {
+  setSaveStatus('saving');
+  clearTimeout(saveDebounce);
+  saveDebounce = setTimeout(() => {
+    saveCurrentNote();
+    setSaveStatus('saved');
+    renderSidebar();
+  }, 1500); // auto-save after 1.5s idle
+  updateWordCount();
+}
+
+function startAutoSave() {
+  // Also do a hard save every 30 seconds regardless
+  autoSaveTimer = setInterval(() => {
+    saveCurrentNote();
+    setSaveStatus('saved');
+    renderSidebar();
+  }, 30000);
+}
+
+function setSaveStatus(state) {
+  const dot  = document.getElementById('saveDot');
+  const text = document.getElementById('saveText');
+  if(state==='saving') { dot.className='save-dot saving'; text.textContent='Saving…'; }
+  else { dot.className='save-dot saved'; text.textContent='Saved'; }
+}
+
+// ════════════════════════════════════════════
+//  WORD COUNT
+// ════════════════════════════════════════════
+function updateWordCount() {
+  const v = document.getElementById('notepad').value.trim();
+  const words = v ? v.split(/\s+/).length : 0;
+  const chars = document.getElementById('notepad').value.length;
+  document.getElementById('wordCount').textContent = v ? `${words} words · ${chars} chars` : '';
+}
+
+// ════════════════════════════════════════════
+//  SIDEBAR RENDER
+// ════════════════════════════════════════════
+function renderSidebar(highlightQuery) {
+  const list   = document.getElementById('sidebarList');
+  const index  = getIndex();
+  const today  = todayKey();
+
+  // Ensure today is shown even if empty
+  const allKeys = index.includes(today) ? index : [today, ...index];
+
+  if(!allKeys.length) {
+    list.innerHTML = `<div class="no-results">No notes yet.<br>Start typing!</div>`;
+    return;
+  }
+
+  // Group by year-month
+  const groups = {};
+  allKeys.forEach(key => {
+    const [y, m] = key.split('-');
+    const gk = `${y}-${m}`;
+    if(!groups[gk]) groups[gk]=[];
+    groups[gk].push(key);
+  });
+
+  let html = '';
+  Object.keys(groups).sort((a,b)=>b.localeCompare(a)).forEach(gk=>{
+    const [y, m] = gk.split('-');
+    html += `<div class="sidebar-section">${MONTHS[parseInt(m)-1]} ${y}</div>`;
+    groups[gk].forEach(key=>{
+      const text    = loadNote(key);
+      const label   = keyToLabel(key);
+      const isActive = key === currentKey && !isSearchMode;
+      const isT      = isToday(key);
+      // Preview: first non-empty line
+      const preview  = text.split('\n').map(l=>l.trim()).find(l=>l.length>0) || (isT ? 'Today\'s note…' : 'Empty');
+      const words    = text.trim() ? text.trim().split(/\s+/).length : 0;
+
+      let labelHTML = esc(label);
+      if(highlightQuery && highlightQuery.length >= 2) {
+        labelHTML = highlightMatch(esc(label), highlightQuery);
+      }
+
+      html += `<div class="day-item ${isActive?'active':''} ${isT?'today':''}" onclick="loadDay('${key}')">
+        <div class="day-info">
+          <div class="day-name">${labelHTML}${isT?`<span class="today-badge">Today</span>`:''}</div>
+          <div class="day-preview">${esc(preview.slice(0,50))}${preview.length>50?'…':''}</div>
+          ${words>0?`<div class="day-words">${words} words</div>`:''}
+        </div>
+      </div>`;
+    });
+  });
+
+  list.innerHTML = html;
+}
+
+// ════════════════════════════════════════════
+//  SEARCH
+// ════════════════════════════════════════════
+document.getElementById('sidebarSearch').addEventListener('input', function() {
+  searchQuery = this.value.trim();
+  const clearBtn = document.getElementById('searchClear');
+  const icon     = document.getElementById('searchIcon');
+  if(searchQuery.length >= 1) {
+    clearBtn.classList.add('visible');
+    icon.style.display='none';
+  } else {
+    clearBtn.classList.remove('visible');
+    icon.style.display='';
+  }
+
+  if(searchQuery.length >= 2) {
+    doSearch(searchQuery);
+  } else {
+    exitSearchMode();
+  }
+});
+
+function clearSearch() {
+  document.getElementById('sidebarSearch').value='';
+  document.getElementById('searchClear').classList.remove('visible');
+  document.getElementById('searchIcon').style.display='';
+  exitSearchMode();
+  renderSidebar();
+}
+
+function doSearch(q) {
+  isSearchMode = true;
+  const notes  = getAllNotes();
+  const ql     = q.toLowerCase();
+  const hits   = [];
+
+  notes.forEach(({key, text}) => {
+    if(!text) return;
+    const tl = text.toLowerCase();
+    if(tl.includes(ql)) {
+      // Extract snippets around each hit
+      const snippets = [];
+      let pos = 0;
+      while((pos = tl.indexOf(ql, pos)) !== -1) {
+        const start = Math.max(0, pos-80);
+        const end   = Math.min(text.length, pos+q.length+80);
+        let snippet = text.slice(start, end);
+        if(start>0) snippet='…'+snippet;
+        if(end<text.length) snippet=snippet+'…';
+        snippets.push(snippet);
+        pos += q.length;
+        if(snippets.length >= 3) break; // max 3 snippets per note
+      }
+      hits.push({ key, label:keyToLabel(key), snippets });
+    }
+  });
+
+  // Render sidebar with matches highlighted
+  renderSidebarSearch(hits, q);
+
+  // Show search results pane
+  const sa = document.getElementById('searchResultsArea');
+  const nw = document.getElementById('notepadWrap');
+  sa.style.display = 'flex';
+  sa.style.flexDirection = 'column';
+  nw.style.display = 'none';
+
+  document.getElementById('srHeader').textContent = hits.length
+    ? `${hits.length} note${hits.length===1?'':'s'} matched "${q}"`
+    : `No results for "${q}"`;
+  document.getElementById('srSub').textContent = hits.length
+    ? `Click any result to open that day's note.`
+    : '';
+
+  if(!hits.length) {
+    document.getElementById('srList').innerHTML=`<div class="no-sr"><div class="icon">🔍</div><div>No notes contain "<strong>${esc(q)}</strong>"</div></div>`;
+    return;
+  }
+
+  document.getElementById('srList').innerHTML = hits.map(h=>`
+    <div class="sr-result" onclick="openFromSearch('${h.key}')">
+      <div class="sr-date">${esc(h.label)}</div>
+      ${h.snippets.map(s=>`<div class="sr-snippet">${highlightMatch(esc(s), q)}</div>`).join('<hr style="border:none;border-top:1px dashed var(--green-200);margin:6px 0;">')}
+    </div>`).join('');
+}
+
+function renderSidebarSearch(hits, q) {
+  const matchKeys = new Set(hits.map(h=>h.key));
+  const list   = document.getElementById('sidebarList');
+  const index  = getIndex();
+  const today  = todayKey();
+  const allKeys = index.includes(today) ? index : [today, ...index];
+
+  let html = '';
+  if(!hits.length) {
+    html = `<div class="no-results">No matches found</div>`;
+  } else {
+    html += `<div class="sidebar-section">${hits.length} match${hits.length===1?'':'es'}</div>`;
+    hits.forEach(({key,label})=>{
+      const text = loadNote(key);
+      const preview = text.split('\n').map(l=>l.trim()).find(l=>l.toLowerCase().includes(q.toLowerCase()))||'';
+      html += `<div class="day-item ${key===currentKey&&!isSearchMode?'active':''} ${isToday(key)?'today':''}" onclick="openFromSearch('${key}')">
+        <div class="day-info">
+          <div class="day-name">${highlightMatch(esc(label),q)}${isToday(key)?`<span class="today-badge">Today</span>`:''}</div>
+          <div class="day-preview">${highlightMatch(esc(preview.slice(0,60)),q)}${preview.length>60?'…':''}</div>
+        </div>
+      </div>`;
+    });
+  }
+  list.innerHTML = html;
+}
+
+function openFromSearch(key) {
+  clearSearch();
+  loadDay(key);
+}
+
+function exitSearchMode() {
+  isSearchMode = false;
+  document.getElementById('searchResultsArea').style.display = 'none';
+  document.getElementById('notepadWrap').style.display = 'flex';
+  renderSidebar();
+}
+
+// ════════════════════════════════════════════
+//  DELETE
+// ════════════════════════════════════════════
+function confirmDelete() {
+  document.getElementById('deleteModalMsg').innerHTML =
+    `This will permanently delete the note for <strong>${keyToLabel(currentKey)}</strong>. This can't be undone.`;
+  document.getElementById('deleteModal').classList.add('open');
+}
+function closeDeleteModal() { document.getElementById('deleteModal').classList.remove('open'); }
+function doDelete() {
+  const key = currentKey;
+  deleteNote(key);
+  closeDeleteModal();
+  showToast(`🗑 Deleted — ${keyToLabel(key)}`);
+  loadDay(todayKey());
+}
+
+// ════════════════════════════════════════════
+//  KEYBOARD SHORTCUTS
+// ════════════════════════════════════════════
+function setupKeyboardShortcuts() {
+  document.addEventListener('keydown', e => {
+    // Cmd/Ctrl+S → save
+    if((e.metaKey||e.ctrlKey) && e.key==='s') {
+      e.preventDefault();
+      saveNow();
+    }
+    // Cmd/Ctrl+F → focus search
+    if((e.metaKey||e.ctrlKey) && e.key==='f' && document.activeElement!==document.getElementById('sidebarSearch')) {
+      e.preventDefault();
+      document.getElementById('sidebarSearch').focus();
+      document.getElementById('sidebarSearch').select();
+    }
+    // Escape → clear search if in search mode
+    if(e.key==='Escape' && isSearchMode) {
+      clearSearch();
+    }
+  });
+}
+
+// ════════════════════════════════════════════
+//  HELPERS
+// ════════════════════════════════════════════
+function esc(str) {
+  if(!str) return '';
+  return String(str)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function highlightMatch(text, query) {
+  if(!query||query.length<2) return text;
+  const escaped = query.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  return text.replace(new RegExp(`(${escaped})`, 'gi'), '<mark class="search-hit">$1</mark>');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 3000);
+}
+
+// ════════════════════════════════════════════
+//  TEXTAREA EVENTS
+// ════════════════════════════════════════════
+document.getElementById('notepad').addEventListener('input', onNoteInput);
+
+// Tab key → insert spaces instead of leaving textarea
+document.getElementById('notepad').addEventListener('keydown', e => {
+  if(e.key==='Tab') {
+    e.preventDefault();
+    const ta = e.target;
+    const start = ta.selectionStart;
+    const end   = ta.selectionEnd;
+    ta.value = ta.value.slice(0,start)+'    '+ta.value.slice(end);
+    ta.selectionStart = ta.selectionEnd = start+4;
+  }
+});
+</script>
+</body>
+</html>
