@@ -1,36 +1,10 @@
 {
-  "quickList": [
-    {
-      "id": "ql-1773672558559",
-      "text": "Keurig Next Round",
-      "done": false,
-      "createdAt": "2026-03-16T14:49:18.559Z"
-    },
-    {
-      "id": "ql-1773421910667",
-      "text": "SMI - Adams MA - KN Trucking",
-      "done": false,
-      "createdAt": "2026-03-13T17:11:50.667Z"
-    },
-    {
-      "id": "ql-1773421584654",
-      "text": "Drop Trailer in Buffalo - Get it Done",
-      "done": false,
-      "createdAt": "2026-03-13T17:06:24.654Z"
-    },
-    {
-      "id": "ql-1773254529440",
-      "text": "Call Timber HP  - Frank Cook",
-      "done": false,
-      "createdAt": "2026-03-11T18:42:09.440Z"
-    }
-  ],
   "tasks": [
     {
       "id": "r1",
       "title": "Create and Send Invoices to Megan",
       "timeOfDay": "morning",
-      "date": "2026-03-17",
+      "date": "2026-03-24",
       "category": "invoice",
       "recurring": "weekly",
       "reminder": true,
@@ -79,6 +53,17 @@
   ],
   "completed": [
     {
+      "id": "r1",
+      "title": "Create and Send Invoices to Megan",
+      "timeOfDay": "morning",
+      "date": "2026-03-17",
+      "category": "invoice",
+      "recurring": "weekly",
+      "reminder": true,
+      "createdAt": "2026-03-11",
+      "completedAt": "2026-03-17T19:05:53.949Z"
+    },
+    {
       "id": "task-1773258945403",
       "title": "Reach out to Morcon Tissue on Fuel Surcharge situation and volume",
       "timeOfDay": "afternoon",
@@ -103,5 +88,31 @@
   ],
   "settings": {
     "email": "Mattpatrick11@gmail.com"
-  }
+  },
+  "quickList": [
+    {
+      "id": "ql-1773672558559",
+      "text": "Keurig Next Round",
+      "done": false,
+      "createdAt": "2026-03-16T14:49:18.559Z"
+    },
+    {
+      "id": "ql-1773421910667",
+      "text": "SMI - Adams MA - KN Trucking",
+      "done": false,
+      "createdAt": "2026-03-13T17:11:50.667Z"
+    },
+    {
+      "id": "ql-1773421584654",
+      "text": "Drop Trailer in Buffalo - Get it Done",
+      "done": false,
+      "createdAt": "2026-03-13T17:06:24.654Z"
+    },
+    {
+      "id": "ql-1773254529440",
+      "text": "Call Timber HP  - Frank Cook",
+      "done": false,
+      "createdAt": "2026-03-11T18:42:09.440Z"
+    }
+  ]
 }
