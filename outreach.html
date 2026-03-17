@@ -544,37 +544,122 @@ let customAccounts   = [];  // manually added accounts
 // ════════════════════════════════════════════
 //  EMAIL TEMPLATES
 // ════════════════════════════════════════════
+const SIG = `Matthew Patrick
+GMH Transportation Services
+Phone: 802-460-1300 ext. 525  |  Cell: 802-299-9022
+Matt@gmhtrans.com
+"When Service Counts"`;
+
 const TEMPLATES = [
-  { id:'reintro', label:'🔄 Re-Introduction',
-    body:(co,contact,city,state)=>{
-      const f=contact?contact.name.split(' ')[0]:'there';
-      return `Subject: Reconnecting — GMH Transportation\n\nHi ${f},\n\nI wanted to reach out and reconnect — it's been a while since we've been in touch, and I wanted to see how things are going from a freight and logistics standpoint.\n\nGMH Transportation is an asset-based carrier headquartered in Vermont with 4 terminal locations and coast-to-coast service capabilities. We handle dry van, temperature-controlled, and flatbed freight with a strong asset presence throughout the Northeast and Mid-Atlantic.\n\nWe've worked with a number of manufacturers in your space, and I'd love to reconnect to see if there might be any opportunities worth exploring — whether that's spot coverage, dedicated lanes, or just getting back on your carrier list.\n\nWould you be open to a quick 15-minute call this week or next?\n\nBest,\nMatt Patrick\nGMH Transportation Services\nMatt@gmhtrans.com`;
+  {
+    id: 'core_cold',
+    label: '⭐ Core Cold (Your Template)',
+    body: (co, contact, city, state) => {
+      const f = contact ? contact.name.split(' ')[0] : null;
+      const greeting = f ? `Hi ${f},` : 'Hi,';
+      const loc = city && state ? `${city}, ${state}` : (city || state || 'your area');
+      return `Subject: Transportation Procurement — GMH Trans
+
+${greeting}
+
+I'm looking to see if there's an opportunity to learn more about your transportation procurement process, specifically for Asset-Based Carriers.
+
+GMH Trans is a midsized carrier headquartered in New England and we're always looking to align directly with shippers in your area — we have inbound customer freight delivering daily nearby.
+
+I've been with GMH for 10+ years while GMH itself has been in business for 22+ years with no plans of going anywhere. We maintain terminals in Southern VT, Rochester NY, and Santa Fe Springs CA, serving both TL and LTL modalities.
+
+I'd be interested to learn more about your carrier requirements to see if we can align our capacity in your network or earn inclusion in future sourcing events. In a world of tightening capacity and fraud, if nothing else we may serve as a reliable option to call on in a pinch.
+
+Have a great day!
+
+${SIG}`;
     }
   },
-  { id:'cold_asset', label:'🚛 Asset Presence',
-    body:(co,contact,city,state)=>{
-      const f=contact?contact.name.split(' ')[0]:'there';
-      const loc=city&&state?`${city}, ${state}`:(city||state||'your facility');
-      return `Subject: GMH Transportation — Asset Presence Near ${loc}\n\nHi ${f},\n\nI'm reaching out because GMH Transportation regularly moves freight in and out of your area, and I wanted to explore whether there might be an opportunity to put that capacity to work for ${co}.\n\nWe're an asset-based carrier (not a broker) headquartered in Vermont with 4 terminal locations and dedicated lanes throughout the Northeast, Mid-Atlantic, and beyond. Because we're already running assets nearby, we can often offer competitive rates and quick response times — particularly for dry van and temperature-controlled freight.\n\nI'd love to learn more about your transportation procurement process and see if there are lanes where we could add value.\n\nAre you the right person to connect with on this, or would you be able to point me in the right direction?\n\nBest,\nMatt Patrick\nGMH Transportation Services\nMatt@gmhtrans.com`;
+  {
+    id: 'local_angle',
+    label: '📍 Local Asset Angle',
+    body: (co, contact, city, state) => {
+      const f = contact ? contact.name.split(' ')[0] : null;
+      const greeting = f ? `Hi ${f},` : 'Hi,';
+      const loc = city && state ? `${city}, ${state}` : (city || state || 'your area');
+      return `Subject: Asset-Based Carrier Near ${loc}
+
+${greeting}
+
+I wanted to reach out because we run freight through ${loc} regularly and I wanted to see if there's an opportunity to learn more about your carrier requirements.
+
+GMH Trans is an asset-based carrier — not a broker — headquartered in New England with terminals in Southern VT, Rochester NY, and Santa Fe Springs CA. Because we're already landing assets in your area for existing customers, we're often in a position to offer competitive rates and reliable capacity when you need it.
+
+I've personally been with GMH for over 10 years. We're a midsized, family-owned operation that's been around 22+ years and isn't going anywhere.
+
+Would you be the right person to connect with on transportation procurement, or is there someone else on your team I should reach out to?
+
+Have a great day!
+
+${SIG}`;
     }
   },
-  { id:'followup', label:'📞 Post-Call Follow-Up',
-    body:(co,contact,city,state)=>{
-      const f=contact?contact.name.split(' ')[0]:'there';
-      return `Subject: Follow-Up — GMH Transportation / ${co}\n\nHi ${f},\n\nThank you for taking the time to speak with me earlier — I really appreciate it.\n\nAs discussed, GMH Transportation is an asset-based carrier with strong lane coverage in the Northeast and Mid-Atlantic. We're particularly well-positioned for:\n\n  • Dry van FTL and LTL freight\n  • Temperature-controlled (refrigerated) shipments\n  • Flatbed and specialized loads\n  • Intermodal and brokerage solutions when needed\n\nI'll follow up with our rate sheet and relevant lane information as we discussed. In the meantime, please don't hesitate to reach out if anything comes up — I'm happy to help cover a load on short notice.\n\nLooking forward to the possibility of working together.\n\nBest,\nMatt Patrick\nGMH Transportation Services\nMatt@gmhtrans.com`;
+  {
+    id: 'reconnect',
+    label: '🔄 Reconnect (Past Contact)',
+    body: (co, contact, city, state) => {
+      const f = contact ? contact.name.split(' ')[0] : null;
+      const greeting = f ? `Hi ${f},` : 'Hi,';
+      return `Subject: Checking Back In — GMH Trans
+
+${greeting}
+
+It's been a while — I wanted to check back in and see how things are going on your end from a transportation standpoint.
+
+We haven't connected in some time, but GMH Trans is still very much in the game — same ownership, same commitment, now with terminals in Southern VT, Rochester NY, and Santa Fe Springs CA covering both TL and LTL. We've grown a lot, but the approach hasn't changed.
+
+If your carrier situation has shifted at all or you have any lanes that could use a reliable asset-based option, I'd love to reconnect and learn more.
+
+Hope all is well — have a great day!
+
+${SIG}`;
     }
   },
-  { id:'lane', label:'🗺️ Lane-Specific Pitch',
-    body:(co,contact,city,state)=>{
-      const f=contact?contact.name.split(' ')[0]:'there';
-      const loc=city&&state?`${city}, ${state}`:(city||state||'your facilities');
-      return `Subject: Lane Coverage Inquiry — GMH Transportation\n\nHi ${f},\n\nI'm reaching out to learn more about your transportation needs, specifically for your ${loc} location.\n\nGMH Trans is an asset-based carrier headquartered in Vermont with 4 terminals, 90+ drivers, and 240+ trailers. We have established lanes running in and out of your region regularly, which means we can offer reliable capacity without relying solely on the spot market.\n\nWe specialize in:\n  • Full Truckload (FTL) — direct point-to-point service\n  • Less-Than-Truckload (LTL) — cost-effective for smaller loads\n  • Refrigerated freight — temperature-controlled door to door\n  • Drop trailer programs — for flex loading windows\n\nIf you have any lanes that could use a reliable asset-based option, or if you're running a sourcing event, I'd love to earn a spot on your carrier list.\n\nWould you be open to a brief call?\n\nBest,\nMatt Patrick\nGMH Transportation Services\nMatt@gmhtrans.com`;
+  {
+    id: 'followup_call',
+    label: '📞 Post-Call Follow-Up',
+    body: (co, contact, city, state) => {
+      const f = contact ? contact.name.split(' ')[0] : null;
+      const greeting = f ? `Hi ${f},` : 'Hi,';
+      return `Subject: Great Speaking With You — GMH Trans
+
+${greeting}
+
+Really appreciated the time today — glad we got to connect.
+
+As discussed, I'll follow up with some information on our lanes and capacity in your area. In the meantime, please don't hesitate to reach out directly if anything comes up — I'm easy to get ahold of and happy to help cover a load on short notice.
+
+Looking forward to seeing if we can make something work.
+
+Have a great day!
+
+${SIG}`;
     }
   },
-  { id:'referral', label:'🤝 Referral / Intro Ask',
-    body:(co,contact,city,state)=>{
-      const f=contact?contact.name.split(' ')[0]:'there';
-      return `Subject: Quick Introduction — GMH Transportation\n\nHi ${f},\n\nI hope this finds you well. I'm reaching out to introduce GMH Transportation and see if you might be able to point me toward the right person on your team for freight and logistics.\n\nWe're a family-owned, asset-based carrier based in Vermont — 25+ years in the industry, coast-to-coast service, and a reputation for reliability. We work with manufacturers throughout New England and the Mid-Atlantic.\n\nIf transportation doesn't fall within your purview, I'd really appreciate a quick pointer to the right contact at ${co}. And if it does — I'd love a brief intro call.\n\nThank you for your time.\n\nBest,\nMatt Patrick\nGMH Transportation Services\nMatt@gmhtrans.com`;
+  {
+    id: 'find_right_person',
+    label: '🔍 Find the Right Person',
+    body: (co, contact, city, state) => {
+      const f = contact ? contact.name.split(' ')[0] : null;
+      const greeting = f ? `Hi ${f},` : 'Hi,';
+      return `Subject: Quick Question — Transportation at ${co}
+
+${greeting}
+
+I hope I'm reaching the right person — I'm looking to connect with whoever handles transportation procurement or carrier relationships at ${co}.
+
+GMH Trans is an asset-based carrier headquartered in New England with daily freight running in your area. I'd love just a few minutes to learn more about your carrier setup and see if there's a fit.
+
+If this isn't your area, would you be able to point me in the right direction?
+
+Thanks so much — have a great day!
+
+${SIG}`;
     }
   }
 ];
